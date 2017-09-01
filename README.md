@@ -10,7 +10,7 @@ A mini-app for viewing and editing image files, demonstrating XAML layout, data 
 ![PhotoLab sample showing the image editing page](Screenshots/PhotoLab-editing-page.png)
 
 This repo includes the complete sample pictured above, plus separate versions that serve as starting points for a series of 
-[XAML basics tutorials](xaml-basics-starting-points/README.md). 
+[XAML basics tutorials](xaml-basics-starting-points). 
 Each of these starting points is a simplified version of the complete sample, making the code easier to browse around in as you go through each tutorial.
 
 > **Note:** The tutorials do not proceed sequentially to build up to the complete sample, so be sure to start each tutorial by opening the correct starting point project. 
