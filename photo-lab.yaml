@@ -1,0 +1,11 @@
+### YamlMime:Sample
+sample:
+- name: PhotoLab sample
+  description: A mini-app for viewing and editing image files, demonstrating XAML layout, data binding, and UI customization features for Universal Windows Platform (UWP) apps.
+  generateZip: false
+  author: karler
+  languages:
+  - csharp
+  - xaml
+  technologies:
+  - windows
