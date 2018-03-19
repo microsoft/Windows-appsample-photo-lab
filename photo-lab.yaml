@@ -2,7 +2,8 @@
 sample:
 - name: PhotoLab sample
   description: A mini-app for viewing and editing image files, demonstrating XAML layout, data binding, and UI customization features for Universal Windows Platform (UWP) apps.
-  generateZip: false
+  image: Screenshots/PhotoLab-collection-page.png
+  generateZip: true
   author: karler
   languages:
   - csharp
