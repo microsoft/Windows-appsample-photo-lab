@@ -23,20 +23,18 @@
 //  ---------------------------------------------------------------------------------
 
 using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.Effects;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Numerics;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
-using Windows.UI.Composition;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace PhotoLab
@@ -44,42 +42,47 @@ namespace PhotoLab
     public sealed partial class DetailPage : Page
     {
         ImageFileInfo item;
-        Compositor compositor;
-        CompositionEffectBrush combinedBrush;
         CultureInfo culture = CultureInfo.CurrentCulture;
-        ContrastEffect contrastEffect;
-        ExposureEffect exposureEffect;
-        TemperatureAndTintEffect temperatureAndTintEffect;
-        GaussianBlurEffect graphicsEffect;
-        SaturationEffect saturationEffect;
-        bool editingInitialized = false;
         bool canNavigateWithUnsavedChanges = false;
+        BitmapImage ImageSource = null;
 
         public DetailPage()
         {
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             item = e.Parameter as ImageFileInfo;
             canNavigateWithUnsavedChanges = false;
-            ResetEffects();
+            ImageSource = await item.GetImageSourceAsync();
 
             if (item != null)
             {
-                item.PropertyChanged += (s, e2) => UpdateEffectBrush(e2.PropertyName);
-                targetImage.Source = item.ImageSource;
                 ConnectedAnimation imageAnimation = ConnectedAnimationService.GetForCurrentView().GetAnimation("itemAnimation");
                 if (imageAnimation != null)
                 {
-                    imageAnimation.Completed += (s, e_) =>
+                    targetImage.Source = ImageSource;
+
+                    imageAnimation.Completed += async (s, e_) =>
                     {
-                        MainImage.Source = item.ImageSource;
+                        await LoadBrushAsync();
+                        // This delay prevents a flicker that can happen when
+                        // a large image is being loaded to the brush. It gives
+                        // the image time to finish loading. (200 is ok, 400 to be safe.)
+                        await Task.Delay(400);
                         targetImage.Source = null;
                     };
                     imageAnimation.TryStart(targetImage);
                 }
+
+                if (ImageSource.PixelHeight == 0 && ImageSource.PixelWidth == 0)
+                {
+                    // There is no editable image loaded. Disable zoom and edit
+                    // to prevent other errors.
+                    EditButton.IsEnabled = false;
+                    ZoomButton.IsEnabled = false;
+                };
             }
             else
             {
@@ -116,8 +119,11 @@ namespace PhotoLab
             }
             else
             {
+                if (e.NavigationMode == NavigationMode.Back)
+                {
+                    ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("backAnimation", imgRect);
+                }
                 canNavigateWithUnsavedChanges = false;
-                ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("backAnimation", MainImage);
                 base.OnNavigatingFrom(e);
             }
         }
@@ -140,7 +146,8 @@ namespace PhotoLab
             {
                 // The user decided to leave the page. Restart
                 // the navigation attempt. 
-                canNavigateWithUnsavedChanges = true; 
+                canNavigateWithUnsavedChanges = true;
+                ResetEffects();
                 Frame.Navigate(e.SourcePageType, e.Parameter);
             }
         }
@@ -160,8 +167,8 @@ namespace PhotoLab
 
         private void FitToScreen()
         {
-            var zoomFactor = (float)Math.Min(MainImageScroller.ActualWidth / item.ImageSource.PixelWidth,
-                MainImageScroller.ActualHeight / item.ImageSource.PixelHeight);
+            var zoomFactor = (float)Math.Min(MainImageScroller.ActualWidth / item.ImageProperties.Width,
+                MainImageScroller.ActualHeight / item.ImageProperties.Height);
             MainImageScroller.ChangeView(null, null, zoomFactor);
         }
 
@@ -182,125 +189,49 @@ namespace PhotoLab
             }
         }
 
-        private void InitializeEffects()
-        {
-            saturationEffect = new SaturationEffect()
-            {
-                Name = "SaturationEffect",
-                Saturation = item.Saturation,
-                Source = new CompositionEffectSourceParameter("Backdrop")
-            };
-            contrastEffect = new ContrastEffect()
-            {
-                Name = "ContrastEffect",
-                Contrast = item.Contrast,
-                Source = saturationEffect
-            };
-            exposureEffect = new ExposureEffect()
-            {
-                Name = "ExposureEffect",
-                Source = contrastEffect,
-                Exposure = item.Exposure,
-            };
-            temperatureAndTintEffect = new TemperatureAndTintEffect()
-            {
-                Name = "TemperatureAndTintEffect",
-                Source = exposureEffect,
-                Temperature = item.Temperature,
-                Tint = item.Tint
-            };
-            graphicsEffect = new GaussianBlurEffect()
-            {
-                Name = "Blur",
-                Source = temperatureAndTintEffect,
-                BlurAmount = item.Blur,
-                BorderMode = EffectBorderMode.Hard,
-            };
-        }
-
-        private void InitializeCompositor()
-        {
-            compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
-            InitializeEffects();
-            MainImage.Source = item.ImageSource;
-            MainImage.InvalidateArrange();
-
-            var destinationBrush = compositor.CreateBackdropBrush();
-
-            var graphicsEffectFactory = compositor.CreateEffectFactory(graphicsEffect, new[] {
-                "SaturationEffect.Saturation", "ExposureEffect.Exposure", "Blur.BlurAmount",
-                "TemperatureAndTintEffect.Temperature", "TemperatureAndTintEffect.Tint",
-                "ContrastEffect.Contrast" });
-            combinedBrush = graphicsEffectFactory.CreateBrush();
-            combinedBrush.SetSourceParameter("Backdrop", destinationBrush);
-
-            var effectSprite = compositor.CreateSpriteVisual();
-            effectSprite.Size = new Vector2((float)item.ImageSource.PixelWidth, (float)item.ImageSource.PixelHeight);
-            effectSprite.Brush = combinedBrush;
-            ElementCompositionPreview.SetElementChildVisual(MainImage, effectSprite);
-
-            editingInitialized = true;
-        }
-
         private void ToggleEditState()
         {
-            if (MainSplitView.IsPaneOpen)
-            {
-                MainSplitView.IsPaneOpen = false;
-            }
-            else
-            {
-                if (!editingInitialized)
-                { 
-                    InitializeCompositor();
-                }
-                MainSplitView.IsPaneOpen = true;
-            }
-        }
-
-        private void UpdateEffectBrush(string propertyName)
-        {
-            void update(string effectName, float effectValue) =>
-                combinedBrush?.Properties.InsertScalar(effectName, effectValue);
-
-            switch (propertyName)
-            {
-                case nameof(item.Exposure): update("ExposureEffect.Exposure", item.Exposure); break;
-                case nameof(item.Temperature): update("TemperatureAndTintEffect.Temperature", item.Temperature); break;
-                case nameof(item.Tint): update("TemperatureAndTintEffect.Tint", item.Tint); break;
-                case nameof(item.Contrast): update("ContrastEffect.Contrast", item.Contrast); break;
-                case nameof(item.Saturation): update("SaturationEffect.Saturation", item.Saturation); break;
-                case nameof(item.Blur): update("Blur.BlurAmount", item.Blur); break;
-                default: break;
-            }
+            MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
         }
 
         private async void ExportImage()
         {
+            // We haven't enabled image export for phone.
+            var qualifiers = Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().QualifierValues;
+            if (qualifiers.ContainsKey("DeviceFamily") && qualifiers["DeviceFamily"] == "Mobile")
+            {
+                ContentDialog notSupportedDialog = new ContentDialog
+                {
+                    Title = "Export is not enabled",
+                    Content = "Image export is not enabled on phones.",
+                    CloseButtonText = "OK",
+                };
+
+                ContentDialogResult result = await notSupportedDialog.ShowAsync();
+                return;
+            }
+
+            // Not on phone, so export image.
             CanvasDevice device = CanvasDevice.GetSharedDevice();
             using (CanvasRenderTarget offscreen = new CanvasRenderTarget(
-                device, item.ImageSource.PixelWidth, item.ImageSource.PixelHeight, 96))
+                device, item.ImageProperties.Width, item.ImageProperties.Height, 96))
             {
                 using (IRandomAccessStream stream = await item.ImageFile.OpenReadAsync())
                 using (CanvasBitmap image = await CanvasBitmap.LoadAsync(offscreen, stream, 96))
                 {
-                    saturationEffect.Source = image;
+                    ImageEffectsBrush.SetSource(image);
+
                     using (CanvasDrawingSession ds = offscreen.CreateDrawingSession())
                     {
                         ds.Clear(Windows.UI.Colors.Black);
 
-                        // Need to copy the value of each effect setting.
-                        contrastEffect.Contrast = item.Contrast;
-                        exposureEffect.Exposure = item.Exposure;
-                        temperatureAndTintEffect.Temperature = item.Temperature;
-                        temperatureAndTintEffect.Tint = item.Tint;
-                        saturationEffect.Saturation = item.Saturation;
-                        graphicsEffect.BlurAmount = item.Blur;
-                        ds.DrawImage(graphicsEffect);
+                        var img = ImageEffectsBrush.Image;
+                        ds.DrawImage(img);
                     }
 
                     var fileSavePicker = new FileSavePicker()
                     {
+                        SuggestedStartLocation = PickerLocationId.PicturesLibrary,
                         SuggestedSaveFile = item.ImageFile
                     };
 
@@ -315,21 +246,75 @@ namespace PhotoLab
                             await offscreen.SaveAsync(outStream, CanvasBitmapFileFormat.Jpeg);
                         }
 
-                        ResetEffects();
-                        var newItem = await MainPage.LoadImageInfo(outputFile);
-
-                        if (outputFile.Path == item.ImageFile.Path)
+                        // Check whether this save is overwriting the original image.
+                        // If it is, replace it in the list. Otherwise, insert it as a copy.
+                        bool replace = false;
+                        if (outputFile.IsEqual(item.ImageFile))
                         {
-                            item.ImageSource = newItem.ImageSource; 
-                        }
-                        else
-                        {
-                            item = newItem;
+                            replace = true;
                         }
 
-                        MainImage.Source = item.ImageSource;
+                        try
+                        {
+                            await LoadSavedImageAsync(outputFile, replace);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.Message.Contains("0x80070323"))
+                            {
+                                // The handle with which this oplock was associated has been closed.
+                                // The oplock is now broken. (Exception from HRESULT: 0x80070323)
+                                // This is a temporary condition, so just try again.
+                                await LoadSavedImageAsync(outputFile, replace);
+                            }
+                        }
                     }
                 }
+            }
+        }
+
+        private async Task LoadSavedImageAsync(StorageFile imageFile, bool replaceImage)
+        {
+            item.NeedsSaved = false;
+            var newItem = await MainPage.LoadImageInfo(imageFile);
+            ResetEffects();
+
+            // Get the index of the original image so we can
+            // insert the saved image in the same place.
+            var index = MainPage.Current.Images.IndexOf(item);
+
+            item = newItem;
+            this.Bindings.Update();
+
+            UnloadObject(imgRect);
+            FindName("imgRect");
+            await LoadBrushAsync();
+
+            // Insert the saved image into the collection.
+            if (replaceImage == true)
+            {
+                MainPage.Current.Images.RemoveAt(index);
+                MainPage.Current.Images.Insert(index, item);
+            }
+            else
+            {
+                MainPage.Current.Images.Insert(index+1, item);
+            }
+            
+
+            // Replace the persisted image used for connected animation.
+            MainPage.Current.UpdatePersistedItem(item);
+
+            // Update BitMapImage used for small picture.
+            ImageSource = await item.GetImageSourceAsync();
+            SmallImage.Source = ImageSource;
+        }
+
+        private async Task LoadBrushAsync()
+        {
+            using (IRandomAccessStream fileStream = await item.ImageFile.OpenReadAsync())
+            {
+                ImageEffectsBrush.LoadImageFromStream(fileStream);
             }
         }
 
@@ -343,5 +328,9 @@ namespace PhotoLab
             item.Saturation = 1;
         }
 
+        private void SmallImage_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            SmallImage.Source = ImageSource;
+        }
     }
 }

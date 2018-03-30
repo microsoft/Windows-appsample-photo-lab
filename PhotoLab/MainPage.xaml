@@ -79,8 +79,8 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Image x:Name="ItemImage"
-                       Source="{x:Bind ImageSource, Mode=OneWay}"
-                       Stretch="Uniform" />
+                       Stretch="Uniform"
+                       Opacity="0" />
                 <StackPanel Orientation="Vertical"
                             Grid.Row="1">
                     <TextBlock Text="{x:Bind ImageTitle, Mode=OneWay}"
@@ -128,8 +128,8 @@
             <Grid Height="{Binding ItemSize, ElementName=page}"
                   Width="{Binding ItemSize, ElementName=page}">
                 <Image x:Name="ItemImage"
-                       Source="{x:Bind ImageSource}"
-                       Stretch="UniformToFill">
+                       Stretch="UniformToFill"
+                       Opacity="0">
                     <ToolTipService.ToolTip>
                         <ToolTip x:Name="tooltip">
                             <StackPanel Orientation="Vertical"
@@ -176,6 +176,7 @@
         </CommandBar>
 
         <GridView x:Name="ImageGridView"
+                  ContainerContentChanging="ImageGridView_ContainerContentChanging"
                   animations:ReorderGridAnimation.Duration="400"
                   Margin="0,0,0,8"
                   ItemClick="ImageGridView_ItemClick"

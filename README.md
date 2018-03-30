@@ -9,12 +9,12 @@ A mini-app for viewing and editing image files, demonstrating XAML layout, data 
 ![PhotoLab sample showing the image collection page](Screenshots/PhotoLab-collection-page.png)
 ![PhotoLab sample showing the image editing page](Screenshots/PhotoLab-editing-page.png)
 
-This repo includes the complete sample pictured above, plus separate versions that serve as starting points for a series of 
-[XAML basics tutorials](xaml-basics-starting-points). 
+This repo includes the complete sample pictured above, plus separate versions that serve as starting points for a series of
+[XAML basics tutorials](xaml-basics-starting-points).
 Each of these starting points is a simplified version of the complete sample, making the code easier to browse around in as you go through each tutorial.
 
-> **Note:** The tutorials do not proceed sequentially to build up to the complete sample, so be sure to start each tutorial by opening the correct starting point project. 
-Also, be sure to check out the complete sample to see additional features such as custom animations and phone support. 
+> **Note:** The tutorials do not proceed sequentially to build up to the complete sample, so be sure to start each tutorial by opening the correct starting point project.
+Also, be sure to check out the complete sample to see additional features such as custom animations and phone support.
 
 ## Features
 
@@ -23,8 +23,9 @@ PhotoLab demonstrates:
 * XAML layout ranging from basics to adaptive and tailored layouts. 
 * XAML data binding including the [{x:Bind} markup extension](https://docs.microsoft.com/windows/uwp/xaml-platform/x-bind-markup-extension).
 * XAML styling and UI customization.
-* Image effects from [Windows.UI.Composition](https://docs.microsoft.com/en-us/uwp/api/windows.ui.composition).
+* Image effects from [Windows.UI.Composition](https://docs.microsoft.com/uwp/api/windows.ui.composition).
 * The use of open source libraries including the [UWP Community Toolkit](https://github.com/Microsoft/UWPCommunityToolkit) (for [ReorderGridAnimation](http://docs.uwpcommunitytoolkit.com/en/master/animations/ReorderGrid/) and [Telerik UI for UWP](https://github.com/telerik/UI-For-UWP) (for [RadRating control](http://docs.telerik.com/devtools/universal-windows-platform/controls/radrating/rating-gettingstarted)).
+* Loading images from the Pictures library using data virtualization to increase performance when there are numerous files. 
 
 ## Code at a glance
 
@@ -36,13 +37,15 @@ check out the following files for examples of some highlighted features:
 * Styling and customization: see [FancySliderControlTemplate](PhotoLab/DetailPage.xaml#61) in [DetailPage.xaml](PhotoLabl/DetailPage.xaml#25). 
 * Image effects: see code starting with [InitializeEffects](PhotoLab/DetailPage.xaml.cs#185) in [DetailPage.xaml.cs](PhotoLab/DetailPage.xaml.cs#25).
 
-## Related documentation
+## Related documentation and samples
 
 * [Controls and patterns for UWP apps](https://docs.microsoft.com/windows/uwp/controls-and-patterns/index)
-* [Layout for UWP apps](https://docs.microsoft.com/en-us/windows/uwp/layout/)
+* [Layout for UWP apps](https://docs.microsoft.com/windows/uwp/layout/)
 * [Data binding in depth](https://docs.microsoft.com/windows/uwp/data-binding/data-binding-in-depth)
-* [UWP style guide](https://docs.microsoft.com/en-us/windows/uwp/style/)
-* [Visual layer](https://docs.microsoft.com/en-us/windows/uwp/composition/visual-layer)
+* [UWP style guide](https://docs.microsoft.com/windows/uwp/style/)
+* [Visual layer](https://docs.microsoft.com/windows/uwp/composition/visual-layer)
+* [ListView and GridView data virtualization](https://docs.microsoft.com/windows/uwp/debug-test-perf/listview-and-gridview-data-optimization)
+* [Data virtualization sample](https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/XamlDataVirtualization)
 
 ## External libraries used in this sample
 

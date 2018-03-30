@@ -397,9 +397,9 @@
     </Page.Resources>
 
     <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Orientation="Horizontal">
+        <StackPanel x:Name="TitlePanel" Orientation="Horizontal">
             <TextBlock x:Name="TitleTextBlock"
-                       Text="{x:Bind item.ImageTitle}"
+                       Text="{x:Bind item.ImageTitle, Mode=OneWay}"
                        Style="{StaticResource TitleTextBlockStyle}"
                        Margin="24,0,0,24" />
             <TextBlock Text="*"
@@ -440,16 +440,27 @@
                               ViewChanged="MainImageScroller_ViewChanged"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch">
-                    <Image x:Name="MainImage"
-                           Stretch="None"
-                           DoubleTapped="{x:Bind UpdateZoomState}" />
+                    <Rectangle x:Name="imgRect"
+                               x:Load="True"
+                               Width="{x:Bind item.ImageProperties.Width, Mode=OneWay}"
+                               Height="{x:Bind item.ImageProperties.Height, Mode=OneWay}">
+                        <Rectangle.Fill>
+                            <local:LoadedImageBrush x:Name="ImageEffectsBrush" 
+                                                BlurAmount="{x:Bind item.Blur, Mode=OneWay}"
+                                                SaturationAmount="{x:Bind item.Saturation, Mode=OneWay}"
+                                                ContrastAmount="{x:Bind item.Contrast, Mode=OneWay}"
+                                                ExposureAmount="{x:Bind item.Exposure, Mode=OneWay}"
+                                                TintAmount="{x:Bind item.Tint, Mode=OneWay}"
+                                                TemperatureAmount="{x:Bind item.Temperature, Mode=OneWay}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
                 </ScrollViewer>
             </Grid>
 
             <SplitView.Pane>
 
                 <ScrollViewer>
-                    <Grid x:Name="EditControlsGrid"
+                    <Grid x:Name="EditControlsGrid" x:Load="{x:Bind MainSplitView.IsPaneOpen, Mode=OneWay}"
                           HorizontalAlignment="Stretch"
                           Margin="24,48,24,24">
                         <Grid.Resources>
@@ -488,6 +499,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBox x:Name="TitleEditBox"
@@ -610,13 +622,18 @@
                                 Grid.Row="7"
                                 Value="{x:Bind item.Blur, Mode=TwoWay}"
                                 Minimum="0"
-                                Maximum="5" />
+                                Maximum="5"/>
                         <TextBlock Grid.Row="7"
                                    Grid.Column="1"
                                    Style="{StaticResource ValueTextBox}"
                                    Text="{x:Bind item.Blur.ToString('N', culture), Mode=OneWay}" />
 
-                        <Grid Grid.Row="8"
+                        <Image x:Name="SmallImage" Width="300" Height="200" Grid.Row="8" Grid.ColumnSpan="2"
+                               Loaded="SmallImage_Loaded"/>
+
+
+
+                        <Grid Grid.Row="9"
                               Grid.ColumnSpan="2"
                               VerticalAlignment="Bottom">
                             <Grid.ColumnDefinitions>
@@ -672,7 +689,7 @@
                         <Setter Target="MainSplitView.(RelativePanel.Above)"
                                 Value="MainCommandBar" />
                         <Setter Target="MainSplitView.(RelativePanel.Below)"
-                                Value="TitleTextBlock" />
+                                Value="TitlePanel" />
                         <Setter Target="MainSplitView.(RelativePanel.AlignBottomWithPanel)"
                                 Value="False" />
 

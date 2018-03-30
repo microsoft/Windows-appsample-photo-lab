@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using Windows.System.Profile;
 using Windows.UI.Core;
@@ -42,6 +43,7 @@ namespace PhotoLab
 {
     public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
+        public static MainPage Current;
         private ImageFileInfo persistedItem;
 
         public ObservableCollection<ImageFileInfo> Images { get; } = new ObservableCollection<ImageFileInfo>();
@@ -50,6 +52,14 @@ namespace PhotoLab
         public MainPage()
         {
             this.InitializeComponent();
+            Current = this;
+        }
+
+        // If the image is edited and saved in the details page, this method gets called
+        // so that the back navigation connected animation uses the correct image.
+        public void UpdatePersistedItem(ImageFileInfo item)
+        {
+            persistedItem = item;
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -91,44 +101,53 @@ namespace PhotoLab
 
         private async Task GetItemsAsync()
         {
-            // https://docs.microsoft.com/uwp/api/windows.ui.xaml.controls.image#Windows_UI_Xaml_Controls_Image_Source
-            // See "Using a stream source to show images from the Pictures library".
-            // This code is modified to get images from the app folder.
+            QueryOptions options = new QueryOptions();
+            options.FolderDepth = FolderDepth.Deep;
+            options.FileTypeFilter.Add(".jpg");
+            options.FileTypeFilter.Add(".png");
+            options.FileTypeFilter.Add(".gif");
 
-            // Get the app folder where the images are stored.
-            StorageFolder appInstalledFolder = Package.Current.InstalledLocation;
-            StorageFolder assets = await appInstalledFolder.GetFolderAsync("Assets\\Samples");
+            // Get the Pictures library
+            Windows.Storage.StorageFolder picturesFolder = Windows.Storage.KnownFolders.PicturesLibrary;
+            var result = picturesFolder.CreateFileQueryWithOptions(options);
 
-            // Get and process files in folder
-            IReadOnlyList<StorageFile> fileList = await assets.GetFilesAsync();
-            foreach (StorageFile file in fileList)
+            IReadOnlyList<StorageFile> imageFiles = await result.GetFilesAsync();
+            bool unsupportedFilesFound = false;
+            foreach (StorageFile file in imageFiles)
             {
-                // Limit to only png or jpg files.
-                if (file.ContentType == "image/png" || file.ContentType == "image/jpeg")
+                // Only files on the local computer are supported. 
+                // Files on OneDrive or a network location are excluded.
+                if (file.Provider.Id == "computer")
                 {
                     Images.Add(await LoadImageInfo(file));
                 }
+                else
+                {
+                    unsupportedFilesFound = true;
+                }
+            }
+
+            if (unsupportedFilesFound == true)
+            {
+                ContentDialog unsupportedFilesDialog = new ContentDialog
+                {
+                    Title = "Unsupported images found",
+                    Content = "This sample app only supports images stored locally on the computer. We found files in your library that are stored in OneDrive or another network location. We didn't load those images.",
+                    CloseButtonText = "Ok"
+                };
+
+                ContentDialogResult resultNotUsed = await unsupportedFilesDialog.ShowAsync();
             }
         }
 
-       public async static Task<ImageFileInfo> LoadImageInfo(StorageFile file)
+        public async static Task<ImageFileInfo> LoadImageInfo(StorageFile file)
         {
-            // Open a stream for the selected file.
-            // The 'using' block ensures the stream is disposed
-            // after the image is loaded.
-            using (IRandomAccessStream fileStream = await file.OpenReadAsync())
-            {
-                // Create a bitmap to be the image source.
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.SetSource(fileStream);
+            var properties = await file.Properties.GetImagePropertiesAsync();
+            ImageFileInfo info = new ImageFileInfo(
+                properties, file,
+                file.DisplayName, file.DisplayType);
 
-                var properties = await file.Properties.GetImagePropertiesAsync();
-                ImageFileInfo info = new ImageFileInfo(
-                    properties, file, bitmapImage,
-                    file.DisplayName, file.DisplayType);
-
-                return info; 
-            }
+            return info;
         }
 
         public double ItemSize
@@ -178,6 +197,49 @@ namespace PhotoLab
             else
             {
                 ItemSize = ZoomSlider.Value;
+            }
+        }
+
+        private void ImageGridView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.InRecycleQueue)
+            {
+                var templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
+                var image = (Image)templateRoot.FindName("ItemImage");
+
+                image.Source = null;
+            }
+
+            if (args.Phase == 0)
+            {
+                args.RegisterUpdateCallback(ShowImage);
+                args.Handled = true;
+            }
+        }
+
+        private async void ShowImage(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.Phase == 1)
+            {
+                // It's phase 1, so show this item's image.
+                var templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
+                var image = (Image)templateRoot.FindName("ItemImage");
+                image.Opacity = 100;
+
+                var item = args.Item as ImageFileInfo;
+
+                try
+                {
+                    image.Source = await item.GetImageThumbnailAsync();
+                }
+                catch (Exception)
+                {
+                    // File could be corrupt, or it might have an image file
+                    // extension, but not really be an image file.
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.UriSource = new Uri(image.BaseUri, "Assets/StoreLogo.png");
+                    image.Source = bitmapImage;
+                }
             }
         }
     }
