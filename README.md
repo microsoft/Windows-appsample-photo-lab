@@ -2,6 +2,17 @@
   category: ControlsLayoutAndText FilesFoldersAndLibraries
 -->
 
+---
+topic: sample
+languages:
+- csharp
+products:
+- windows
+- uwp
+statusNotificationTargets:
+- codefirst
+---
+
 # PhotoLab sample
 
 A mini-app for viewing and editing image files, demonstrating XAML layout, data binding, and UI customization features for Universal Windows Platform (UWP) apps.
