@@ -82,3 +82,5 @@ The default project is PhotoLab and you can Start Debugging (F5) or Start Withou
 The app will run in the emulator or on physical devices. 
 
 > **Note:** The platform target currently defaults to ARM, so be sure to change that to x64 or x86 if you want to test on a non-ARM device. 
+
+
