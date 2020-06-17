@@ -27,18 +27,18 @@ This repo includes the complete sample pictured above, plus separate versions th
 Each of these starting points is a simplified version of the complete sample, making the code easier to browse around in as you go through each tutorial.
 
 > **Note:** The tutorials do not proceed sequentially to build up to the complete sample, so be sure to start each tutorial by opening the correct starting point project.
-Also, be sure to check out the complete sample to see additional features such as custom animations and phone support.
+Also, be sure to check out the complete sample to see additional features such as custom animations.
 
 ## Features
 
 PhotoLab demonstrates:
-	
-* XAML layout ranging from basics to adaptive and tailored layouts. 
+
+* XAML layout ranging from basics to adaptive and tailored layouts.
 * XAML data binding including the [{x:Bind} markup extension](https://docs.microsoft.com/windows/uwp/xaml-platform/x-bind-markup-extension).
 * XAML styling and UI customization.
 * Image effects from [Windows.UI.Composition](https://docs.microsoft.com/uwp/api/windows.ui.composition).
-* The use of open source libraries including the [UWP Community Toolkit](https://github.com/Microsoft/UWPCommunityToolkit) (for [ReorderGridAnimation](http://docs.uwpcommunitytoolkit.com/en/master/animations/ReorderGrid/) and [Telerik UI for UWP](https://github.com/telerik/UI-For-UWP) (for [RadRating control](http://docs.telerik.com/devtools/universal-windows-platform/controls/radrating/rating-gettingstarted)).
-* Loading images from the Pictures library using data virtualization to increase performance when there are numerous files. 
+* Use of the [Windows UI Library (WinUI)](https://docs.microsoft.com/windows/apps/winui) and the [Windows Community Toolkit](https://docs.microsoft.com/windows/communitytoolkit/) (for [ReorderGridAnimation](https://docs.microsoft.com/windows/communitytoolkit/animations/reordergrid)).
+* Loading images from the Pictures library using data virtualization to increase performance when there are numerous files.
 
 ## Code at a glance
 
@@ -62,8 +62,8 @@ check out the following files for examples of some highlighted features:
 
 ## External libraries used in this sample
 
-* [UWP Community Toolkit](https://github.com/Microsoft/UWPCommunityToolkit)
-* [Telerik UI for UWP](https://github.com/telerik/UI-For-UWP)
+* [Windows UI Library (WinUI)](https://docs.microsoft.com/windows/apps/winui)
+* [Windows Community Toolkit](https://docs.microsoft.com/windows/communitytoolkit/)
 
 ## Universal Windows Platform development
 

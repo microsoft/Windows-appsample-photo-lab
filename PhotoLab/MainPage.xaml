@@ -29,7 +29,7 @@
       xmlns:local="using:PhotoLab"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:telerikInput="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d"
       NavigationCacheMode="Enabled"
@@ -46,8 +46,7 @@
 
         <Flyout x:Key="zoomFlyout">
             <StackPanel>
-                <Slider x:Name="ZoomSlider"
-                        Width="100"
+                <Slider x:Name="ZoomSlider"   
                         Minimum="180"
                         Maximum="540"
                         Value="270"
@@ -58,7 +57,6 @@
                         Header="Grid item size" />
                 <ToggleSwitch x:Name="FitScreenToggle"
                               Header="Fit to screen"
-                              MinWidth="100"
                               Toggled="{x:Bind DetermineItemSize}"
                               ToolTipService.ToolTip="Resize images to use available space." />
             </StackPanel>
@@ -96,21 +94,9 @@
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    Margin="8,0,0,0" />
                     </StackPanel>
-                    <telerikInput:RadRating Value="{x:Bind ImageRating, Mode=OneWay}"
-                                            IsReadOnly="True">
-                        <telerikInput:RadRating.FilledIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="SolidStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.FilledIconContentTemplate>
-                        <telerikInput:RadRating.EmptyIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="OutlineStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.EmptyIconContentTemplate>
-                    </telerikInput:RadRating>
+
+                    <muxc:RatingControl Value="{x:Bind ImageRating, Mode=OneWay}"
+                                        IsReadOnly="True"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
