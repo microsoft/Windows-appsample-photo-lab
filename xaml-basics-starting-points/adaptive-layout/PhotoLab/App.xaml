@@ -25,7 +25,16 @@
 <Application x:Class="PhotoLab.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
-    <!-- Add the window snap points here -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <!-- Other merged dictionaries here -->
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Other app resources here -->
+            <SolidColorBrush x:Key="RatingControlSelectedForeground" Color="White"/>
+            <!-- Add the window breakpoints here. -->
+        </ResourceDictionary>
+    </Application.Resources>
     
 </Application>

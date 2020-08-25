@@ -41,9 +41,8 @@
         <Thickness x:Key="LargeItemMargin">8</Thickness>
         <x:Int32 x:Key="SmallItemMarginValue">0</x:Int32>
         <Thickness x:Key="SmallItemMargin">0</Thickness>
-        <x:Int32 x:Key="DesktopWindowSidePaddingValue">16</x:Int32>
-        <x:Int32 x:Key="MobileWindowSidePaddingValue">32</x:Int32>
-
+        <x:Int32 x:Key="DefaultWindowSidePaddingValue">16</x:Int32>
+        
         <Flyout x:Key="zoomFlyout">
             <StackPanel>
                 <Slider x:Name="ZoomSlider"   
@@ -109,7 +108,7 @@
                     Value="{StaticResource LargeItemMargin}" />
         </Style>
 
-        <DataTemplate x:Key="ImageGridView_MobileItemTemplate"
+        <DataTemplate x:Key="ImageGridView_SmallItemTemplate"
                       x:DataType="local:ImageFileInfo">
             <Grid Height="{Binding ItemSize, ElementName=page}"
                   Width="{Binding ItemSize, ElementName=page}">
@@ -140,7 +139,7 @@
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="ImageGridView_MobileItemContainerStyle"
+        <Style x:Key="ImageGridView_SmallItemContainerStyle"
                TargetType="GridViewItem" />
 
     </Page.Resources>
@@ -181,52 +180,23 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowBreakpoint}" />
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowBreakpoint}" />
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowBreakpoint}" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ImageGridView.ItemTemplate"
-                                Value="{StaticResource ImageGridView_MobileItemTemplate}" />
+                                Value="{StaticResource ImageGridView_SmallItemTemplate}" />
                         <Setter Target="ImageGridView.ItemContainerStyle"
-                                Value="{StaticResource ImageGridView_MobileItemContainerStyle}" />
-
-                        <Setter Target="ZoomSlider.Minimum"
-                                Value="80" />
-                        <Setter Target="ZoomSlider.Maximum"
-                                Value="180" />
-                        <Setter Target="ZoomSlider.TickFrequency"
-                                Value="20" />
-                        <Setter Target="ZoomSlider.Value"
-                                Value="100" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <local:MobileScreenTrigger InteractionMode="Touch" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="ImageGridView.(RelativePanel.Above)"
-                                Value="MainCommandBar" />
-                        <Setter Target="ImageGridView.ItemTemplate"
-                                Value="{StaticResource ImageGridView_MobileItemTemplate}" />
-                        <Setter Target="ImageGridView.ItemContainerStyle"
-                                Value="{StaticResource ImageGridView_MobileItemContainerStyle}" />
-
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignBottomWithPanel)"
-                                Value="True" />
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignLeftWithPanel)"
-                                Value="True" />
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignRightWithPanel)"
-                                Value="True" />
+                                Value="{StaticResource ImageGridView_SmallItemContainerStyle}" />
 
                         <Setter Target="ZoomSlider.Minimum"
                                 Value="80" />

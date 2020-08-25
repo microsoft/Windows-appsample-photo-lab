@@ -29,7 +29,7 @@
       xmlns:local="using:PhotoLab"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:telerikInput="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d"
       NavigationCacheMode="Enabled"
@@ -41,13 +41,11 @@
         <Thickness x:Key="LargeItemMargin">8</Thickness>
         <x:Int32 x:Key="SmallItemMarginValue">0</x:Int32>
         <Thickness x:Key="SmallItemMargin">0</Thickness>
-        <x:Int32 x:Key="DesktopWindowSidePaddingValue">16</x:Int32>
-        <x:Int32 x:Key="MobileWindowSidePaddingValue">32</x:Int32>
-
+        <x:Int32 x:Key="DefaultWindowSidePaddingValue">16</x:Int32>
+        
         <Flyout x:Key="zoomFlyout">
             <StackPanel>
-                <Slider x:Name="ZoomSlider"
-                        Width="100"
+                <Slider x:Name="ZoomSlider"   
                         Minimum="180"
                         Maximum="540"
                         Value="270"
@@ -58,7 +56,6 @@
                         Header="Grid item size" />
                 <ToggleSwitch x:Name="FitScreenToggle"
                               Header="Fit to screen"
-                              MinWidth="100"
                               Toggled="{x:Bind DetermineItemSize}"
                               ToolTipService.ToolTip="Resize images to use available space." />
             </StackPanel>
@@ -96,21 +93,9 @@
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    Margin="8,0,0,0" />
                     </StackPanel>
-                    <telerikInput:RadRating Value="{x:Bind ImageRating, Mode=OneWay}"
-                                            IsReadOnly="True">
-                        <telerikInput:RadRating.FilledIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="SolidStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.FilledIconContentTemplate>
-                        <telerikInput:RadRating.EmptyIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="OutlineStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.EmptyIconContentTemplate>
-                    </telerikInput:RadRating>
+
+                    <muxc:RatingControl Value="{x:Bind ImageRating, Mode=OneWay}"
+                                        IsReadOnly="True"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -123,12 +108,12 @@
                     Value="{StaticResource LargeItemMargin}" />
         </Style>
 
-        <DataTemplate x:Key="ImageGridView_MobileItemTemplate"
+        <DataTemplate x:Key="ImageGridView_SmallItemTemplate"
                       x:DataType="local:ImageFileInfo">
             <Grid Height="{Binding ItemSize, ElementName=page}"
                   Width="{Binding ItemSize, ElementName=page}">
                 <Image x:Name="ItemImage"
-                       Source="{x:Bind ImageSource}"
+                       Source="{x:Bind ImageSource, Mode=OneWay}"
                        Stretch="UniformToFill">
                     <ToolTipService.ToolTip>
                         <ToolTip x:Name="tooltip">
@@ -154,7 +139,7 @@
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="ImageGridView_MobileItemContainerStyle"
+        <Style x:Key="ImageGridView_SmallItemContainerStyle"
                TargetType="GridViewItem" />
 
     </Page.Resources>
@@ -194,52 +179,23 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowBreakpoint}" />
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowBreakpoint}" />
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowBreakpoint}" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ImageGridView.ItemTemplate"
-                                Value="{StaticResource ImageGridView_MobileItemTemplate}" />
+                                Value="{StaticResource ImageGridView_SmallItemTemplate}" />
                         <Setter Target="ImageGridView.ItemContainerStyle"
-                                Value="{StaticResource ImageGridView_MobileItemContainerStyle}" />
-
-                        <Setter Target="ZoomSlider.Minimum"
-                                Value="80" />
-                        <Setter Target="ZoomSlider.Maximum"
-                                Value="180" />
-                        <Setter Target="ZoomSlider.TickFrequency"
-                                Value="20" />
-                        <Setter Target="ZoomSlider.Value"
-                                Value="100" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <local:MobileScreenTrigger InteractionMode="Touch" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="ImageGridView.(RelativePanel.Above)"
-                                Value="MainCommandBar" />
-                        <Setter Target="ImageGridView.ItemTemplate"
-                                Value="{StaticResource ImageGridView_MobileItemTemplate}" />
-                        <Setter Target="ImageGridView.ItemContainerStyle"
-                                Value="{StaticResource ImageGridView_MobileItemContainerStyle}" />
-
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignBottomWithPanel)"
-                                Value="True" />
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignLeftWithPanel)"
-                                Value="True" />
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignRightWithPanel)"
-                                Value="True" />
+                                Value="{StaticResource ImageGridView_SmallItemContainerStyle}" />
 
                         <Setter Target="ZoomSlider.Minimum"
                                 Value="80" />

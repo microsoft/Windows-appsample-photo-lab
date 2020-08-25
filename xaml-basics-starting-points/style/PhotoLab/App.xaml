@@ -27,9 +27,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Application.Resources>
-        <!--  window width adaptive snap points  -->
-        <x:Double x:Key="MinWindowSnapPoint">0</x:Double>
-        <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
-        <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <!-- Other merged dictionaries here -->
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Other app resources here -->
+            <!-- Window width adaptive breakpoints. -->
+            <x:Double x:Key="MinWindowBreakpoint">0</x:Double>
+            <x:Double x:Key="MediumWindowBreakpoint">641</x:Double>
+            <x:Double x:Key="LargeWindowBreakpoint">1008</x:Double>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

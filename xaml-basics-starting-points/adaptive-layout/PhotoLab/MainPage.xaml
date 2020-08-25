@@ -29,7 +29,7 @@
       xmlns:local="using:PhotoLab"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:telerikInput="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d"
       NavigationCacheMode="Enabled"
@@ -41,8 +41,7 @@
         <Thickness x:Key="LargeItemMargin">8</Thickness>
         <x:Int32 x:Key="SmallItemMarginValue">0</x:Int32>
         <Thickness x:Key="SmallItemMargin">0</Thickness>
-        <x:Int32 x:Key="DesktopWindowSidePaddingValue">16</x:Int32>
-        <x:Int32 x:Key="MobileWindowSidePaddingValue">32</x:Int32>
+        <x:Int32 x:Key="DefaultWindowSidePaddingValue">16</x:Int32>
 
         <Flyout x:Key="zoomFlyout">
             <StackPanel>
@@ -96,21 +95,8 @@
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    Margin="8,0,0,0" />
                     </StackPanel>
-                    <telerikInput:RadRating Value="{x:Bind ImageRating, Mode=OneWay}"
-                                            IsReadOnly="True">
-                        <telerikInput:RadRating.FilledIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="SolidStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.FilledIconContentTemplate>
-                        <telerikInput:RadRating.EmptyIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="OutlineStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.EmptyIconContentTemplate>
-                    </telerikInput:RadRating>
+                    <muxc:RatingControl Value="{x:Bind ImageRating, Mode=OneWay}"
+                                        IsReadOnly="True"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -123,11 +109,11 @@
                     Value="{StaticResource LargeItemMargin}" />
         </Style>
 
-        <Style x:Key="ImageGridView_MobileItemContainerStyle"
+        <Style x:Key="ImageGridView_SmallItemContainerStyle"
                TargetType="GridViewItem" />
         
-        <!-- Add the mobile DataTemplate here -->
-        
+        <!-- Add the small DataTemplate here. -->
+
     </Page.Resources>
 
     <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">

@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using Windows.System.Profile;
 using Windows.UI.Core;
@@ -42,6 +43,7 @@ namespace PhotoLab
 {
     public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
+        public static MainPage Current;
         private ImageFileInfo persistedItem;
 
         public ObservableCollection<ImageFileInfo> Images { get; } = new ObservableCollection<ImageFileInfo>();
@@ -50,6 +52,14 @@ namespace PhotoLab
         public MainPage()
         {
             this.InitializeComponent();
+            Current = this;
+        }
+
+        // If the image is edited and saved in the details page, this method gets called
+        // so that the back navigation connected animation uses the correct image.
+        public void UpdatePersistedItem(ImageFileInfo item)
+        {
+            persistedItem = item;
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -91,27 +101,51 @@ namespace PhotoLab
 
         private async Task GetItemsAsync()
         {
-            // https://docs.microsoft.com/uwp/api/windows.ui.xaml.controls.image#Windows_UI_Xaml_Controls_Image_Source
-            // See "Using a stream source to show images from the Pictures library".
-            // This code is modified to get images from the app folder.
+            QueryOptions options = new QueryOptions();
+            options.FolderDepth = FolderDepth.Deep;
+            options.FileTypeFilter.Add(".jpg");
+            options.FileTypeFilter.Add(".png");
+            options.FileTypeFilter.Add(".gif");
 
-            // Get the app folder where the images are stored.
+            // Get the Pictures library. (Requires 'Pictures Library' capability.)
+            //Windows.Storage.StorageFolder picturesFolder = Windows.Storage.KnownFolders.PicturesLibrary;
+            // OR
+            // Get the Sample pictures.
             StorageFolder appInstalledFolder = Package.Current.InstalledLocation;
-            StorageFolder assets = await appInstalledFolder.GetFolderAsync("Assets\\Samples");
+            StorageFolder picturesFolder = await appInstalledFolder.GetFolderAsync("Assets\\Samples");
 
-            // Get and process files in folder
-            IReadOnlyList<StorageFile> fileList = await assets.GetFilesAsync();
-            foreach (StorageFile file in fileList)
+            var result = picturesFolder.CreateFileQueryWithOptions(options);
+
+            IReadOnlyList<StorageFile> imageFiles = await result.GetFilesAsync();
+            bool unsupportedFilesFound = false;
+            foreach (StorageFile file in imageFiles)
             {
-                // Limit to only png or jpg files.
-                if (file.ContentType == "image/png" || file.ContentType == "image/jpeg")
+                // Only files on the local computer are supported. 
+                // Files on OneDrive or a network location are excluded.
+                if (file.Provider.Id == "computer")
                 {
                     Images.Add(await LoadImageInfo(file));
                 }
+                else
+                {
+                    unsupportedFilesFound = true;
+                }
+            }
+
+            if (unsupportedFilesFound == true)
+            {
+                ContentDialog unsupportedFilesDialog = new ContentDialog
+                {
+                    Title = "Unsupported images found",
+                    Content = "This sample app only supports images stored locally on the computer. We found files in your library that are stored in OneDrive or another network location. We didn't load those images.",
+                    CloseButtonText = "Ok"
+                };
+
+                ContentDialogResult resultNotUsed = await unsupportedFilesDialog.ShowAsync();
             }
         }
 
-       public async static Task<ImageFileInfo> LoadImageInfo(StorageFile file)
+        public async static Task<ImageFileInfo> LoadImageInfo(StorageFile file)
         {
             // Open a stream for the selected file.
             // The 'using' block ensures the stream is disposed
@@ -127,7 +161,7 @@ namespace PhotoLab
                     properties, file, bitmapImage,
                     file.DisplayName, file.DisplayType);
 
-                return info; 
+                return info;
             }
         }
 
@@ -157,15 +191,7 @@ namespace PhotoLab
                 // the ItemContainerStyle * (Right + Left). If those values change,
                 // this value needs to be updated to match.
                 int margins = (int)this.Resources["LargeItemMarginValue"] * 4;
-                double gridWidth = ImageGridView.ActualWidth - (int)this.Resources["DesktopWindowSidePaddingValue"];
-
-                if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Mobile" &&
-                    UIViewSettings.GetForCurrentView().UserInteractionMode == UserInteractionMode.Touch)
-                {
-                    margins = (int)this.Resources["SmallItemMarginValue"] * 4;
-                    gridWidth = ImageGridView.ActualWidth - (int)this.Resources["MobileWindowSidePaddingValue"];
-                }
-
+                double gridWidth = ImageGridView.ActualWidth - (int)this.Resources["DefaultWindowSidePaddingValue"];
                 double ItemWidth = ZoomSlider.Value + margins;
                 // We need at least 1 column.
                 int columns = (int)Math.Max(gridWidth / ItemWidth, 1);

@@ -515,7 +515,7 @@
                                    Style="{StaticResource ValueTextBlock}"
                                    Text="{x:Bind item.Exposure.ToString('N', culture), Mode=OneWay}" />
 
-                        
+
                         <Slider Header="Temperature"
                                 Grid.Row="3"
                                 Foreground="Transparent"
@@ -620,53 +620,5 @@
                 </ScrollViewer>
             </SplitView.Pane>
         </SplitView>
-
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}" />
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <local:MobileScreenTrigger InteractionMode="Touch" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignBottomWithPanel)"
-                                Value="True" />
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignTopWithPanel)"
-                                Value="False" />
-
-                        <Setter Target="MainSplitView.(RelativePanel.Above)"
-                                Value="MainCommandBar" />
-                        <Setter Target="MainSplitView.(RelativePanel.Below)"
-                                Value="TitlePanel" />
-                        <Setter Target="MainSplitView.(RelativePanel.AlignBottomWithPanel)"
-                                Value="False" />
-
-                        <Setter Target="MainSplitView.OpenPaneLength"
-                                Value="220" />
-                        <Setter Target="EditControlsGrid.Margin"
-                                Value="8" />
-
-                        <Setter Target="TitleEditBox.Height"
-                                Value="72" />
-                        <Setter Target="TitleEditBox.Padding"
-                                Value="8" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
     </RelativePanel>
 </Page>

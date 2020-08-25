@@ -107,8 +107,13 @@ namespace PhotoLab
             options.FileTypeFilter.Add(".png");
             options.FileTypeFilter.Add(".gif");
 
-            // Get the Pictures library
-            Windows.Storage.StorageFolder picturesFolder = Windows.Storage.KnownFolders.PicturesLibrary;
+            // Get the Pictures library. (Requires 'Pictures Library' capability.)
+            //Windows.Storage.StorageFolder picturesFolder = Windows.Storage.KnownFolders.PicturesLibrary;
+            // OR
+            // Get the Sample pictures.
+            StorageFolder appInstalledFolder = Package.Current.InstalledLocation;
+            StorageFolder picturesFolder = await appInstalledFolder.GetFolderAsync("Assets\\Samples");
+
             var result = picturesFolder.CreateFileQueryWithOptions(options);
 
             IReadOnlyList<StorageFile> imageFiles = await result.GetFilesAsync();
@@ -176,15 +181,7 @@ namespace PhotoLab
                 // the ItemContainerStyle * (Right + Left). If those values change,
                 // this value needs to be updated to match.
                 int margins = (int)this.Resources["LargeItemMarginValue"] * 4;
-                double gridWidth = ImageGridView.ActualWidth - (int)this.Resources["DesktopWindowSidePaddingValue"];
-
-                if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Mobile" &&
-                    UIViewSettings.GetForCurrentView().UserInteractionMode == UserInteractionMode.Touch)
-                {
-                    margins = (int)this.Resources["SmallItemMarginValue"] * 4;
-                    gridWidth = ImageGridView.ActualWidth - (int)this.Resources["MobileWindowSidePaddingValue"];
-                }
-
+                double gridWidth = ImageGridView.ActualWidth - (int)this.Resources["DefaultWindowSidePaddingValue"];
                 double ItemWidth = ZoomSlider.Value + margins;
                 // We need at least 1 column.
                 int columns = (int)Math.Max(gridWidth / ItemWidth, 1);

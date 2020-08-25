@@ -33,13 +33,12 @@
       NavigationCacheMode="Enabled">
 
     <Page.Resources>
-
-        <!-- Add the DataTemplate and style Setters here -->
+        <!-- Add the DataTemplate and style Setters here. -->
+        
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-        <!-- Add the TextBlock and GridView here -->
+        <!-- Add the TextBlock and GridView here. -->
         
     </Grid>
 </Page>

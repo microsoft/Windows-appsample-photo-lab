@@ -196,22 +196,6 @@ namespace PhotoLab
 
         private async void ExportImage()
         {
-            // We haven't enabled image export for phone.
-            var qualifiers = Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().QualifierValues;
-            if (qualifiers.ContainsKey("DeviceFamily") && qualifiers["DeviceFamily"] == "Mobile")
-            {
-                ContentDialog notSupportedDialog = new ContentDialog
-                {
-                    Title = "Export is not enabled",
-                    Content = "Image export is not enabled on phones.",
-                    CloseButtonText = "OK",
-                };
-
-                ContentDialogResult result = await notSupportedDialog.ShowAsync();
-                return;
-            }
-
-            // Not on phone, so export image.
             CanvasDevice device = CanvasDevice.GetSharedDevice();
             using (CanvasRenderTarget offscreen = new CanvasRenderTarget(
                 device, item.ImageProperties.Width, item.ImageProperties.Height, 96))

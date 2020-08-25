@@ -26,7 +26,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:PhotoLab"
-      xmlns:telerikInput="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
@@ -61,9 +61,9 @@
     </Page.Resources>
 
     <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Orientation="Horizontal">
+        <StackPanel x:Name="TitlePanel" Orientation="Horizontal">
             <TextBlock x:Name="TitleTextBlock"
-                       Text="{x:Bind item.ImageTitle}"
+                       Text="{x:Bind item.ImageTitle, Mode=OneWay}"
                        Style="{StaticResource TitleTextBlockStyle}"
                        Margin="24,0,0,24" />
             <TextBlock Text="*"
@@ -104,20 +104,31 @@
                               ViewChanged="MainImageScroller_ViewChanged"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch">
-                    <Image x:Name="MainImage"
-                           Stretch="None"
-                           DoubleTapped="{x:Bind UpdateZoomState}" />
+                    <Rectangle x:Name="imgRect"
+                               x:Load="True"
+                               Width="{x:Bind item.ImageProperties.Width, Mode=OneWay}"
+                               Height="{x:Bind item.ImageProperties.Height, Mode=OneWay}">
+                        <Rectangle.Fill>
+                            <local:LoadedImageBrush x:Name="ImageEffectsBrush" 
+                                                BlurAmount="{x:Bind item.Blur, Mode=OneWay}"
+                                                SaturationAmount="{x:Bind item.Saturation, Mode=OneWay}"
+                                                ContrastAmount="{x:Bind item.Contrast, Mode=OneWay}"
+                                                ExposureAmount="{x:Bind item.Exposure, Mode=OneWay}"
+                                                TintAmount="{x:Bind item.Tint, Mode=OneWay}"
+                                                TemperatureAmount="{x:Bind item.Temperature, Mode=OneWay}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
                 </ScrollViewer>
             </Grid>
 
             <SplitView.Pane>
 
                 <ScrollViewer>
-                    <Grid x:Name="EditControlsGrid"
+                    <Grid x:Name="EditControlsGrid" x:Load="{x:Bind MainSplitView.IsPaneOpen, Mode=OneWay}"
                           HorizontalAlignment="Stretch"
                           Margin="24,48,24,24">
                         <Grid.Resources>
-                            <Style TargetType="Slider">
+                            <Style TargetType="Slider" BasedOn="{StaticResource DefaultSliderStyle}">
                                 <Setter Property="Margin"
                                     Value="0,0,0,0" />
                                 <Setter Property="Padding"
@@ -127,7 +138,7 @@
                                 <Setter Property="StepFrequency"
                                     Value="0.1" />
                                 <Setter Property="TickFrequency"
-                                    Value="0.1" />
+                                        Value="0.1" />
                             </Style>
                         </Grid.Resources>
                         <Grid.ColumnDefinitions>
@@ -144,6 +155,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBox x:Name="TitleEditBox"
                                  Header="Title"
@@ -151,24 +163,12 @@
                                  Text="{x:Bind item.ImageTitle, Mode=TwoWay}"
                                  Padding="12"
                                  Grid.ColumnSpan="2" />
-                        <telerikInput:RadRating Value="{x:Bind item.ImageRating, Mode=TwoWay}"
-                                                Padding="12"
-                                                Grid.Row="1"
-                                                Grid.ColumnSpan="2"
-                                                Margin="0,0,0,16">
-                            <telerikInput:RadRating.FilledIconContentTemplate>
-                                <DataTemplate>
-                                    <SymbolIcon Symbol="SolidStar"
-                                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" />
-                                </DataTemplate>
-                            </telerikInput:RadRating.FilledIconContentTemplate>
-                            <telerikInput:RadRating.EmptyIconContentTemplate>
-                                <DataTemplate>
-                                    <SymbolIcon Symbol="OutlineStar"
-                                                Foreground="White" />
-                                </DataTemplate>
-                            </telerikInput:RadRating.EmptyIconContentTemplate>
-                        </telerikInput:RadRating>
+                        <muxc:RatingControl Value="{x:Bind item.ImageRating, Mode=TwoWay}"
+                                            Padding="12"
+                                            Grid.Row="1"
+                                            Grid.ColumnSpan="2"
+                                            Margin="0,0,0,16">
+                        </muxc:RatingControl>
 
                         <Slider Header="Exposure"
                                 Grid.Row="2"
@@ -230,7 +230,7 @@
                                    Margin="10,8,0,0" VerticalAlignment="Center" Padding="0"
                                    Text="{x:Bind item.Blur.ToString('N', culture), Mode=OneWay}" />
 
-                        <Grid Grid.Row="8"
+                        <Grid Grid.Row="9"
                               Grid.ColumnSpan="2"
                               VerticalAlignment="Bottom">
                             <Grid.ColumnDefinitions>
@@ -255,53 +255,5 @@
                 </ScrollViewer>
             </SplitView.Pane>
         </SplitView>
-
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}" />
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <local:MobileScreenTrigger InteractionMode="Touch" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignBottomWithPanel)"
-                                Value="True" />
-                        <Setter Target="MainCommandBar.(RelativePanel.AlignTopWithPanel)"
-                                Value="False" />
-
-                        <Setter Target="MainSplitView.(RelativePanel.Above)"
-                                Value="MainCommandBar" />
-                        <Setter Target="MainSplitView.(RelativePanel.Below)"
-                                Value="TitleTextBlock" />
-                        <Setter Target="MainSplitView.(RelativePanel.AlignBottomWithPanel)"
-                                Value="False" />
-
-                        <Setter Target="MainSplitView.OpenPaneLength"
-                                Value="220" />
-                        <Setter Target="EditControlsGrid.Margin"
-                                Value="8" />
-
-                        <Setter Target="TitleEditBox.Height"
-                                Value="72" />
-                        <Setter Target="TitleEditBox.Padding"
-                                Value="8" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
     </RelativePanel>
 </Page>

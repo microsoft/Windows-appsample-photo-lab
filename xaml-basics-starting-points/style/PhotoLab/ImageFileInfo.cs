@@ -25,16 +25,17 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace PhotoLab
 {
     public class ImageFileInfo : INotifyPropertyChanged
     {
-        public ImageFileInfo(ImageProperties properties, StorageFile imageFile,
-            BitmapImage src, string name, string type)
+        public ImageFileInfo(ImageProperties properties, StorageFile imageFile, BitmapImage src, string name, string type)
         {
             ImageProperties = properties;
             ImageSource = src;
@@ -50,6 +51,29 @@ namespace PhotoLab
 
         public ImageProperties ImageProperties { get; }
 
+        public async Task<BitmapImage> GetImageSourceAsync()
+        {
+            using (IRandomAccessStream fileStream = await ImageFile.OpenReadAsync())
+            {
+                // Create a bitmap to be the image source.
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.SetSource(fileStream);
+
+                return bitmapImage;
+            }
+        }
+
+        public async Task<BitmapImage> GetImageThumbnailAsync()
+        {
+            var thumbnail = await ImageFile.GetThumbnailAsync(ThumbnailMode.PicturesView);
+            // Create a bitmap to be the image source.
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.SetSource(thumbnail);
+            thumbnail.Dispose();
+
+            return bitmapImage;
+        }
+
         private BitmapImage _imageSource = null;
         public BitmapImage ImageSource
         {
@@ -61,7 +85,7 @@ namespace PhotoLab
 
         public string ImageFileType { get; }
 
-        public string ImageDimensions => $"{ImageSource.PixelWidth} x {ImageSource.PixelHeight}";
+        public string ImageDimensions => $"{ImageProperties.Width} x {ImageProperties.Height}";
 
         public string ImageTitle
         {

@@ -29,7 +29,7 @@
       xmlns:local="using:PhotoLab"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:telerikInput="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d"
       NavigationCacheMode="Enabled">
@@ -41,13 +41,11 @@
         <Thickness x:Key="LargeItemMargin">8</Thickness>
         <x:Int32 x:Key="SmallItemMarginValue">0</x:Int32>
         <Thickness x:Key="SmallItemMargin">0</Thickness>
-        <x:Int32 x:Key="DesktopWindowSidePaddingValue">16</x:Int32>
-        <x:Int32 x:Key="MobileWindowSidePaddingValue">32</x:Int32>
+        <x:Int32 x:Key="DefaultWindowSidePaddingValue">16</x:Int32>
 
         <Flyout x:Key="zoomFlyout">
             <StackPanel>
                 <Slider x:Name="ZoomSlider"
-                        Width="100"
                         Minimum="180"
                         Maximum="540"
                         Value="270"
@@ -57,7 +55,6 @@
                         Header="Grid item size" />
                 <ToggleSwitch x:Name="FitScreenToggle"
                               Header="Fit to screen"
-                              MinWidth="100"
                               ToolTipService.ToolTip="Resize images to use available space." />
             </StackPanel>
         </Flyout>
@@ -75,9 +72,9 @@
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Image x:Name="ItemImage" 
-                    Source="/Assets/StoreLogo.png" 
-                    Stretch="Uniform" />
+                <Image x:Name="ItemImage"
+                       Source="/Assets/StoreLogo.png"
+                       Stretch="Uniform"/>
                 <StackPanel Orientation="Vertical"
                             Grid.Row="1">
                     <TextBlock Text="Placeholder"
@@ -93,21 +90,8 @@
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    Margin="8,0,0,0" />
                     </StackPanel>
-                    <telerikInput:RadRating Value="3"
-                                            IsReadOnly="True">
-                        <telerikInput:RadRating.FilledIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="SolidStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.FilledIconContentTemplate>
-                        <telerikInput:RadRating.EmptyIconContentTemplate>
-                            <DataTemplate>
-                                <SymbolIcon Symbol="OutlineStar"
-                                            Foreground="White" />
-                            </DataTemplate>
-                        </telerikInput:RadRating.EmptyIconContentTemplate>
-                    </telerikInput:RadRating>
+                    <muxc:RatingControl Value="3"
+                                        IsReadOnly="True"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -138,7 +122,7 @@
                           Flyout="{StaticResource zoomFlyout}" />
         </CommandBar>
 
-        <GridView x:Name="ImageGridView"
+        <GridView x:Name="ImageGridView"               
                   animations:ReorderGridAnimation.Duration="400"
                   Margin="0,0,0,8"
                   IsItemClickEnabled="True"
