@@ -42,7 +42,7 @@
         <x:Int32 x:Key="SmallItemMarginValue">0</x:Int32>
         <Thickness x:Key="SmallItemMargin">0</Thickness>
         <x:Int32 x:Key="DefaultWindowSidePaddingValue">16</x:Int32>
-        
+
         <Flyout x:Key="zoomFlyout">
             <StackPanel>
                 <Slider x:Name="ZoomSlider"   
@@ -145,10 +145,6 @@
     </Page.Resources>
 
     <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock x:Name="TitleTextBlock"
-                   Text="Collection"
-                   Style="{StaticResource TitleTextBlockStyle}"
-                   Margin="24,0,0,24" />
 
         <CommandBar x:Name="MainCommandBar"
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -163,18 +159,24 @@
         <GridView x:Name="ImageGridView"
                   ContainerContentChanging="ImageGridView_ContainerContentChanging"
                   animations:ReorderGridAnimation.Duration="400"
-                  Margin="0,0,0,8"
                   ItemClick="ImageGridView_ItemClick"
                   IsItemClickEnabled="True"
-                  ItemsSource="{x:Bind Images, Mode=OneWay}"
                   RelativePanel.AlignLeftWithPanel="True"
                   RelativePanel.AlignRightWithPanel="True"
                   RelativePanel.Below="TitleTextBlock"
                   Loaded="{x:Bind StartConnectedAnimationForBackNavigation}"
                   ItemsPanel="{StaticResource ImageGridView_ItemsPanelTemplate}"
-                  ItemTemplate="{StaticResource ImageGridView_DefaultItemTemplate}"
                   ItemContainerStyle="{StaticResource ImageGridView_DefaultItemContainerStyle}">
+            <GridView.Header>
+                <TextBlock x:Name="TitleTextBlock"
+           TextWrapping="Wrap"
+           Text="Collection"
+           Margin="24,0,0,24"
+           Style="{StaticResource TitleTextBlockStyle}"/>
+            </GridView.Header>
+    
         </GridView>
+
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
