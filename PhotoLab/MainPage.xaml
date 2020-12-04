@@ -193,14 +193,13 @@
                Text="Collection"
                Margin="24,0,0,24"
                Style="{StaticResource TitleTextBlockStyle}"/>
-
-        <GridView x:Name="ImageGridView"
+    <GridView x:Name="ImageGridView"
               Margin="0,0,0,8"
               RelativePanel.AlignLeftWithPanel="True"
               RelativePanel.AlignRightWithPanel="True"
               RelativePanel.Below="TitleTextBlock"
               ItemTemplate="{StaticResource ImageGridView_DefaultItemTemplate}"
-              ItemContainerStyle="{StaticResource ImageGridView_DefaultItemContainerStyle}"/>
+              HorizontalAlignment="Center"/>
 
 
     </RelativePanel>
