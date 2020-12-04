@@ -99,12 +99,10 @@
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="ImageGridView_DefaultItemContainerStyle"
-               TargetType="GridViewItem">
-            <Setter Property="Background"
-                    Value="Gray" />
-            <Setter Property="Margin"
-                    Value="{StaticResource LargeItemMargin}" />
+        <Style x:Key="ImageGridView_DefaultItemContainerStyle" TargetType="GridViewItem">
+            <Setter Property="Background" Value="Gray"/>
+            <Setter Property="Margin" Value="8"/>
+
         </Style>
 
         <DataTemplate x:Key="ImageGridView_SmallItemTemplate"
@@ -201,7 +199,8 @@
               RelativePanel.AlignLeftWithPanel="True"
               RelativePanel.AlignRightWithPanel="True"
               RelativePanel.Below="TitleTextBlock"
-              ItemTemplate="{StaticResource ImageGridView_DefaultItemTemplate}"/>
+              ItemTemplate="{StaticResource ImageGridView_DefaultItemTemplate}"
+              ItemContainerStyle="{StaticResource ImageGridView_DefaultItemContainerStyle}"/>
 
 
     </RelativePanel>
