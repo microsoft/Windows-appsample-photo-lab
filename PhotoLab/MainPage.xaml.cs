@@ -143,6 +143,7 @@ namespace PhotoLab
 
                 ContentDialogResult resultNotUsed = await unsupportedFilesDialog.ShowAsync();
             }
+            ImageGridView.ItemsSource = Images;
         }
 
         public async static Task<ImageFileInfo> LoadImageInfo(StorageFile file)

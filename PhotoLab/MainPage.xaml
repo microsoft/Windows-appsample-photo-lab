@@ -145,37 +145,7 @@
     </Page.Resources>
 
     <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-        <CommandBar x:Name="MainCommandBar"
-                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                    RelativePanel.AlignRightWithPanel="True"
-                    OverflowButtonVisibility="Collapsed"
-                    DefaultLabelPosition="Right">
-            <AppBarButton Icon="Zoom"
-                          Label="Zoom"
-                          Flyout="{StaticResource zoomFlyout}" />
-        </CommandBar>
-
-        <GridView x:Name="ImageGridView"
-                  ContainerContentChanging="ImageGridView_ContainerContentChanging"
-                  animations:ReorderGridAnimation.Duration="400"
-                  ItemClick="ImageGridView_ItemClick"
-                  IsItemClickEnabled="True"
-                  RelativePanel.AlignLeftWithPanel="True"
-                  RelativePanel.AlignRightWithPanel="True"
-                  RelativePanel.Below="TitleTextBlock"
-                  Loaded="{x:Bind StartConnectedAnimationForBackNavigation}"
-                  ItemsPanel="{StaticResource ImageGridView_ItemsPanelTemplate}"
-                  ItemContainerStyle="{StaticResource ImageGridView_DefaultItemContainerStyle}">
-            <GridView.Header>
-                <TextBlock x:Name="TitleTextBlock"
-           TextWrapping="Wrap"
-           Text="Collection"
-           Margin="24,0,0,24"
-           Style="{StaticResource TitleTextBlockStyle}"/>
-            </GridView.Header>
-    
-        </GridView>
+   
 
 
         <VisualStateManager.VisualStateGroups>
@@ -196,21 +166,43 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ImageGridView.ItemTemplate"
-                                Value="{StaticResource ImageGridView_SmallItemTemplate}" />
+                            Value="{StaticResource ImageGridView_SmallItemTemplate}" />
                         <Setter Target="ImageGridView.ItemContainerStyle"
-                                Value="{StaticResource ImageGridView_SmallItemContainerStyle}" />
+                            Value="{StaticResource ImageGridView_SmallItemContainerStyle}" />
 
                         <Setter Target="ZoomSlider.Minimum"
-                                Value="80" />
+                            Value="80" />
                         <Setter Target="ZoomSlider.Maximum"
-                                Value="180" />
+                            Value="180" />
                         <Setter Target="ZoomSlider.TickFrequency"
-                                Value="20" />
+                            Value="20" />
                         <Setter Target="ZoomSlider.Value"
-                                Value="100" />
+                            Value="100" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
+
+        <CommandBar x:Name="MainCommandBar"
+            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+            RelativePanel.AlignRightWithPanel="True"
+            OverflowButtonVisibility="Collapsed"
+            DefaultLabelPosition="Right">
+            <AppBarButton Icon="Zoom"
+                Label="Zoom"
+                Flyout="{StaticResource zoomFlyout}" />
+        </CommandBar>
+        <TextBlock x:Name="TitleTextBlock"
+               Text="Collection"
+               Margin="24,0,0,24"
+               Style="{StaticResource TitleTextBlockStyle}"/>
+
+        <GridView x:Name="ImageGridView"
+          Margin="0,0,0,8"
+          RelativePanel.AlignLeftWithPanel="True"
+          RelativePanel.AlignRightWithPanel="True"
+          RelativePanel.Below="TitleTextBlock"/>
+
+
     </RelativePanel>
 </Page>
