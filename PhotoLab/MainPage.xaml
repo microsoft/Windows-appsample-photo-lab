@@ -23,17 +23,15 @@
 -->
 
 <Page x:Name="page"
-      x:Class="PhotoLab.MainPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="using:PhotoLab"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
-      mc:Ignorable="d"
-      NavigationCacheMode="Enabled"
-      SizeChanged="{x:Bind DetermineItemSize}">
+  x:Class="PhotoLab.MainPage"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:PhotoLab"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+  mc:Ignorable="d"
+  NavigationCacheMode="Enabled">
     <Page.Resources>
 
         <!-- Margins for grid items -->
@@ -68,34 +66,35 @@
 
         <DataTemplate x:Key="ImageGridView_DefaultItemTemplate"
                       x:DataType="local:ImageFileInfo">
-            <Grid Height="{Binding ItemSize, ElementName=page}"
-                  Width="{Binding ItemSize, ElementName=page}"
-                  Margin="{StaticResource LargeItemMargin}">
+            <Grid Height="300"
+      Width="300"
+      Margin="8">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+
                 <Image x:Name="ItemImage"
-                       Stretch="Uniform"
-                       Opacity="0" />
+           Source="Assets/StoreLogo.png"
+           Stretch="Uniform" />
+
                 <StackPanel Orientation="Vertical"
-                            Grid.Row="1">
-                    <TextBlock Text="{x:Bind ImageTitle, Mode=OneWay}"
-                               HorizontalAlignment="Center"
-                               Style="{StaticResource SubtitleTextBlockStyle}" />
+                Grid.Row="1">
+                    <TextBlock Text="ImageTitle"
+                   HorizontalAlignment="Center"
+                   Style="{StaticResource SubtitleTextBlockStyle}" />
                     <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center">
-                        <TextBlock Text="{x:Bind ImageFileType}"
-                                   HorizontalAlignment="Center"
-                                   Style="{StaticResource CaptionTextBlockStyle}" />
-                        <TextBlock Text="{x:Bind ImageDimensions}"
-                                   HorizontalAlignment="Center"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Margin="8,0,0,0" />
+                    HorizontalAlignment="Center">
+                        <TextBlock Text="ImageFileType"
+                       HorizontalAlignment="Center"
+                       Style="{StaticResource CaptionTextBlockStyle}" />
+                        <TextBlock Text="ImageDimensions"
+                       HorizontalAlignment="Center"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Margin="8,0,0,0" />
                     </StackPanel>
 
-                    <muxc:RatingControl Value="{x:Bind ImageRating, Mode=OneWay}"
-                                        IsReadOnly="True"/>
+                    <muxc:RatingControl Value="3" IsReadOnly="True"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -198,10 +197,11 @@
                Style="{StaticResource TitleTextBlockStyle}"/>
 
         <GridView x:Name="ImageGridView"
-          Margin="0,0,0,8"
-          RelativePanel.AlignLeftWithPanel="True"
-          RelativePanel.AlignRightWithPanel="True"
-          RelativePanel.Below="TitleTextBlock"/>
+              Margin="0,0,0,8"
+              RelativePanel.AlignLeftWithPanel="True"
+              RelativePanel.AlignRightWithPanel="True"
+              RelativePanel.Below="TitleTextBlock"
+              ItemTemplate="{StaticResource ImageGridView_DefaultItemTemplate}"/>
 
 
     </RelativePanel>
